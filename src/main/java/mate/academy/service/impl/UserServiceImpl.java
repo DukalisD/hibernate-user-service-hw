@@ -15,13 +15,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User add(User user) {
-        user.setSalt(HashUtil.getSalt());
-        user.setPassword(HashUtil.hashPassword(user.getPassword(), user.getSalt()));
         return userDao.add(user);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         return userDao.findByEmail(email);
+    }
+
+    @Override
+    public User registerUser(String email, String password) {
+        byte[] salt = HashUtil.getSalt();
+        String hashPassword = HashUtil.hashPassword(password, salt);
+
+        User user = new User();
+        user.setEmail(email);
+        user.setSalt(salt);
+        user.setPassword(hashPassword);
+        return add(user);
     }
 }
